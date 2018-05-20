@@ -28,7 +28,22 @@ BOTH disconnect. It is an atomic relationship (all or nothing).
 // when the server-side connects with the client-side on the server
 io.on('connection', (socket) => {
   console.log('New user connected');
+  // socket.emit from Admin text Welcome to the chat app
+  socket.emit('newMessage', {
+    // only the client that refreshes their browser receives this
+    from: 'Admin',
+    text: 'Welcome to the chat app'
+  });
 
+  // socket.broadcast.emit from Admin text user joined
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user joined',
+    createdAt: new Date().getTime()
+  });
+
+  // socket.emit event is expected to be created from a console, not from index.js
+  // socket.emit('createMessage', {from: 'myName', text: 'My text here'});
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
     // emits a custom event to every client connected
@@ -37,6 +52,13 @@ io.on('connection', (socket) => {
       text: message.text,
       createdAt: new Date().getTime()
     });
+
+    // // send to everybody but THIS socket
+    // socket.broadcast.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.txt,
+    //   createdAt: new Date().getTime()
+    // });
   });
 
   // when the server-side disconnects with the client-side on the server
