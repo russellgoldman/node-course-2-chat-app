@@ -8,18 +8,6 @@
 
   <!-- loading in socket.io library so we have to their libraries on the browser -->
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    // custom javascript
-    var socket = io();   // initiating the socket connection (and keeping it open)
-    socket.on('connect', () => {
-      // when the client-side connects with the server-side server
-      console.log('Connected to server');
-    });
-
-    socket.on('disconnect', () => {
-      // when the client-side disconnects with the server-side server
-      console.log('Disconnected from server');
-    })
-  </script>
+  <script src="js/index.js"></script>
 </body>
 </html>

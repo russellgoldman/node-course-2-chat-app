@@ -29,6 +29,17 @@ BOTH disconnect. It is an atomic relationship (all or nothing).
 io.on('connection', (socket) => {
   console.log('New user connected');
 
+  // emit a custom event
+  socket.emit('newMessage', {
+    from: 'John',
+    text: 'See you then',
+    createAt: 123123
+  });
+
+  socket.on('createMessage', (message) => {
+    console.log('createMessage', message);
+  });
+
   // when the server-side disconnects with the client-side on the server
   socket.on('disconnect', () => {
     console.log('User was disconnected')
