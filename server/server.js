@@ -38,11 +38,12 @@ io.on('connection', (socket) => {
 
   // socket.emit event is expected to be created from a console, not from index.js
   // socket.emit('createMessage', {from: 'myName', text: 'My text here'});
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
+    // if you want to send back multiple things to the client, send an object
+    callback('This is being printed from the server.');   // callback function from index.js
     console.log(message);
     // emits a custom event to every client connected
     io.emit('newMessage', generateMessage(message.from, message.text));
-
     // // send to everybody but THIS socket
     // socket.broadcast.emit('newMessage', {
     //   from: message.from,
