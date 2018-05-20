@@ -1,5 +1,7 @@
 const path = require('path');
 const http = require('http');   // built-in node module, no need to use npm to install
+
+const { generateMessage } = require('./utils/message');
 // joins the directory name and the path we want to go to so we print a simpler path
 const publicPath = path.join(__dirname, '/../public');
 const port = process.env.PORT || 3000;
@@ -29,29 +31,17 @@ BOTH disconnect. It is an atomic relationship (all or nothing).
 io.on('connection', (socket) => {
   console.log('New user connected');
   // socket.emit from Admin text Welcome to the chat app
-  socket.emit('newMessage', {
-    // only the client that refreshes their browser receives this
-    from: 'Admin',
-    text: 'Welcome to the chat app'
-  });
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
   // socket.broadcast.emit from Admin text user joined
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'New user joined',
-    createdAt: new Date().getTime()
-  });
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
   // socket.emit event is expected to be created from a console, not from index.js
   // socket.emit('createMessage', {from: 'myName', text: 'My text here'});
   socket.on('createMessage', (message) => {
-    console.log('createMessage', message);
+    console.log(message);
     // emits a custom event to every client connected
-    io.emit('newMessage', {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime()
-    });
+    io.emit('newMessage', generateMessage(message.from, message.text));
 
     // // send to everybody but THIS socket
     // socket.broadcast.emit('newMessage', {
