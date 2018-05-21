@@ -1,5 +1,29 @@
 // custom javascript
 var socket = io();   // initiating the socket connection (and keeping it open)
+
+// gets called every time a new message is created
+function scrollToBottom () {
+  // Selectors
+  var messages = jQuery('#messages');
+  // select last list item in the ordered list
+  var newMessage = messages.children('li:last-child');
+  // Heights
+  // prop() is a jQuery function
+  var clientHeight = messages.prop('clientHeight');   // fetch the clientHeight for the full messages window
+  var scrollTop = messages.prop('scrollTop');
+  var scrollHeight = messages.prop('scrollHeight');
+  // calculates the height of the message also taking into account the padding that we've applied via CSS
+  var newMessageHeight = newMessage.innerHeight();
+  var lastMessageHeight = newMessage.prev().innerHeight();  // moves us to the previous child
+
+  // only scroll when we're close to the bottom of the list
+  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+    console.log('Should scroll');
+    // scrollTop() is a jQuery method for moving the scroll window, scrollHeight is saying to move to the bottom of the page
+    messages.scrollTop(scrollHeight);
+  }
+}
+
 socket.on('connect', function () {
   // when the client-side connects with the server-side server
   console.log('Connected to server');
@@ -14,7 +38,7 @@ socket.on('disconnect', function () {
 socket.on('newMessage', function (message) {
   // loads the createdAt time into moment so we can format the createdAt timestamp
   var formattedTime = moment(message.createdAt).format('h:mm a');
-  
+
   // target the mustache template and convert it to an HTML template
   var template = jQuery('#message-template').html();
   // fills the HTML template with values and returns the substituted HTML (dynamic templates)
@@ -25,6 +49,7 @@ socket.on('newMessage', function (message) {
   });
   // append the new HTML onto the ordered list element with the unique id 'messages'
   jQuery('#messages').append(html);
+  scrollToBottom();
 
   // // // since we are in the client server file, we print the message to the CLIENT CONSOLE
   // // console.log('newMessage', message);
@@ -52,6 +77,7 @@ socket.on('newLocationMessage', function (message) {
   });
   // append the new HTML onto the ordered list element with the unique id 'messages'
   jQuery('#messages').append(html);
+  scrollToBottom();
 
   // // create a new list tag <li> in HTML using jQuery
   // var li = jQuery('<li></li>');
