@@ -14,35 +14,57 @@ socket.on('disconnect', function () {
 socket.on('newMessage', function (message) {
   // loads the createdAt time into moment so we can format the createdAt timestamp
   var formattedTime = moment(message.createdAt).format('h:mm a');
+  
+  // target the mustache template and convert it to an HTML template
+  var template = jQuery('#message-template').html();
+  // fills the HTML template with values and returns the substituted HTML (dynamic templates)
+  var html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime
+  });
+  // append the new HTML onto the ordered list element with the unique id 'messages'
+  jQuery('#messages').append(html);
 
-  // // since we are in the client server file, we print the message to the CLIENT CONSOLE
-  // console.log('newMessage', message);
-
-  // able to append <li></li> onto the <ol></ol> in HTML
-  var li = jQuery('<li></li>');   // generate new <li> element using jQuery
-  // set the text on our new HTML element
-  li.text(`${message.from} ${formattedTime}: ${message.text}`);
-
-  // append our new <li> element to the existing ordered list with the unique id 'messages'
-  jQuery('#messages').append(li);
+  // // // since we are in the client server file, we print the message to the CLIENT CONSOLE
+  // // console.log('newMessage', message);
+  //
+  // // able to append <li></li> onto the <ol></ol> in HTML
+  // var li = jQuery('<li></li>');   // generate new <li> element using jQuery
+  // // set the text on our new HTML element
+  // li.text(`${message.from} ${formattedTime}: ${message.text}`);
+  //
+  // // append our new <li> element to the existing ordered list with the unique id 'messages'
+  // jQuery('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function (message) {
   // loads the createdAt time into moment so we can format the createdAt timestamp
   var formattedTime = moment(message.createdAt).format('h:mm a');
 
-  // create a new list tag <li> in HTML using jQuery
-  var li = jQuery('<li></li>');
-  // create a new anchor tag <a> in HTML using jQUery
-  var a = jQuery('<a target="_blank">My current location</a>');
+  // target the mustache template and convert it to an HTML template
+  var template = jQuery('#location-message-template').html();
+  // fills the HTML template with values and returns the substituted HTML (dynamic templates)
+  var html = Mustache.render(template, {
+    url: message.url,
+    from: message.from,
+    createdAt: formattedTime
+  });
+  // append the new HTML onto the ordered list element with the unique id 'messages'
+  jQuery('#messages').append(html);
 
-  li.text(`${message.from} ${formattedTime}: `);
-  // create a new attribute on the anchor tag <a>
-  a.attr('href', message.url);    // set the anchor reference to the url on the message object parameter
-  li.append(a);   // append the anchor tag onto the list element (inner, e.g. <li><a>List item 1</a></li>)
-
-  // append the new list item to the ordered list
-  jQuery('#messages').append(li);
+  // // create a new list tag <li> in HTML using jQuery
+  // var li = jQuery('<li></li>');
+  // // create a new anchor tag <a> in HTML using jQUery
+  // var a = jQuery('<a target="_blank">My current location</a>');
+  //
+  // li.text(`${message.from} ${formattedTime}: `);
+  // // create a new attribute on the anchor tag <a>
+  // a.attr('href', message.url);    // set the anchor reference to the url on the message object parameter
+  // li.append(a);   // append the anchor tag onto the list element (inner, e.g. <li><a>List item 1</a></li>)
+  //
+  // // append the new list item to the ordered list
+  // jQuery('#messages').append(li);
 });
 
 // socket.emit('createMessage', {
