@@ -52,13 +52,17 @@ jQuery('#message-form').on('submit', function (e) {
   // e stands for event, and preventDefault prevents HTML forms from including the submitted parameters in the URL
   e.preventDefault();
 
+  // querying the HTML DOM for the chat message textbox using jQuery
+  var messageTextbox = jQuery('[name=message]');
+
   // emits the 'createMessage' event which gets handled in server.js
   socket.emit('createMessage', {
     from: 'User',
     // selects any element in #message-form that has a name attribute equal to message
     text: jQuery('[name=message]').val()
-  }, function () {
-
+  }, function () {  // acknowledgement
+    // clear the value in the textbox once the server has received the data
+    messageTextbox.val('');   // val() allows for a new string to be entered into the textbox
   });
 });
 
@@ -71,15 +75,20 @@ locationButton.on('click', function () {
     // if there is no geolocation object on navigator, alert the user the browser doesn't support geolocation (e.g. IE)
     return alert('Geolocation not supported by your browser.');
   }
+  // disable the button until the location can be found, add an attribute "disabled" with the value "disabled"
+  locationButton.attr('disabled', 'disabled').text('Sending location...');   // .text() changes the text value on the button
   // otherwise, geolocation is supported
   navigator.geolocation.getCurrentPosition(function (position) {
+    // re-enable the "Send Location" button if the position was able to be found
+    locationButton.removeAttr('disabled').text('Send location');
     // finds current position
     socket.emit('createLocationMessage', {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
     });
-  }, function () {
-    // run if location permission denied by the client
+  }, function () {    // run if location permission denied by the client
+    // allow user to try to use the "Send Location" button again
+    locationButton.removeAttr('disabled').text('Send location');
     alert('Unable to fetch location.');
   })
 });
