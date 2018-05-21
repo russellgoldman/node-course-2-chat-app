@@ -12,25 +12,31 @@ socket.on('disconnect', function () {
 
 // waiting to receive 'newMessage' event from the server
 socket.on('newMessage', function (message) {
-  // since we are in the client server file, we print the message to the CLIENT CONSOLE
-  console.log('newMessage', message);
+  // loads the createdAt time into moment so we can format the createdAt timestamp
+  var formattedTime = moment(message.createdAt).format('h:mm a');
+
+  // // since we are in the client server file, we print the message to the CLIENT CONSOLE
+  // console.log('newMessage', message);
 
   // able to append <li></li> onto the <ol></ol> in HTML
   var li = jQuery('<li></li>');   // generate new <li> element using jQuery
   // set the text on our new HTML element
-  li.text(`${message.from}: ${message.text}`);
+  li.text(`${message.from} ${formattedTime}: ${message.text}`);
 
   // append our new <li> element to the existing ordered list with the unique id 'messages'
   jQuery('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function (message) {
+  // loads the createdAt time into moment so we can format the createdAt timestamp
+  var formattedTime = moment(message.createdAt).format('h:mm a');
+
   // create a new list tag <li> in HTML using jQuery
   var li = jQuery('<li></li>');
   // create a new anchor tag <a> in HTML using jQUery
   var a = jQuery('<a target="_blank">My current location</a>');
 
-  li.text(`${message.from}: `);
+  li.text(`${message.from} ${formattedTime}: `);
   // create a new attribute on the anchor tag <a>
   a.attr('href', message.url);    // set the anchor reference to the url on the message object parameter
   li.append(a);   // append the anchor tag onto the list element (inner, e.g. <li><a>List item 1</a></li>)
