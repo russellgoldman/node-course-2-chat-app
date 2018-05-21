@@ -1,7 +1,7 @@
 const path = require('path');
 const http = require('http');   // built-in node module, no need to use npm to install
 
-const { generateMessage } = require('./utils/message');
+const { generateMessage, generateLocationMessage } = require('./utils/message');
 // joins the directory name and the path we want to go to so we print a simpler path
 const publicPath = path.join(__dirname, '/../public');
 const port = process.env.PORT || 3000;
@@ -44,12 +44,11 @@ io.on('connection', (socket) => {
     console.log(message);
     // emits a custom event to every client connected
     io.emit('newMessage', generateMessage(message.from, message.text));
-    // // send to everybody but THIS socket
-    // socket.broadcast.emit('newMessage', {
-    //   from: message.from,
-    //   text: message.txt,
-    //   createdAt: new Date().getTime()
-    // });
+  });
+
+  socket.on('createLocationMessage', (coords) => {
+    // coords is an object
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
   });
 
   // when the server-side disconnects with the client-side on the server
